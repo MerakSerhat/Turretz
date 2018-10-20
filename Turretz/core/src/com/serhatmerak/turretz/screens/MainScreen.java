@@ -4,7 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.serhatmerak.turretz.helpers.GameInfo;
 import com.serhatmerak.turretz.GameMain;
@@ -25,6 +30,7 @@ public class MainScreen implements Screen {
 
 
 
+
     public MainScreen(GameMain game){
         this.game = game;
         batch = game.batch;
@@ -33,9 +39,30 @@ public class MainScreen implements Screen {
         viewport = new StretchViewport(GameInfo.WIDTH,GameInfo.HEIGHT,camera);
 
         mainHuds = new MainHuds(batch,viewport);
+        giveListenersToButtons();
+
 
 
         Gdx.input.setInputProcessor(mainHuds.stage);
+    }
+
+    private void giveListenersToButtons() {
+        mainHuds.btnOriginal.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                for (Actor a:mainHuds.playActors) {
+                    for (Action action:a.getActions()) {
+                        a.removeAction(action);
+                    }
+                    a.addAction(Actions.sequence(Actions.fadeOut(mainHuds.fadingInAndOutTime),Actions.delay(0.5f),Actions.run(new Runnable() {
+                        @Override
+                        public void run() {
+                            game.setScreen(new ShopScreen(game));
+                        }
+                    })));
+                }
+            }
+        });
     }
 
     @Override
@@ -44,6 +71,7 @@ public class MainScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.setProjectionMatrix(camera.combined);
+
 
         mainHuds.stage.act();
         mainHuds.stage.draw();

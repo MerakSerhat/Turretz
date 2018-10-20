@@ -31,15 +31,19 @@ public class MainHuds {
 
 
     private TextButton btnPlay,btnHighscores,btnMoreGame;
-    private TextButton btnOriginal,btnInfinite,btnBack;
+    public TextButton btnOriginal;
+    private TextButton btnInfinite;
+    private TextButton btnBack;
     private TextButton btnLeadboard,btnCredits,btnBackToMainMenu;
 
-    private Array<Actor> menuActors,highscoreActors,playActors;
+    private Array<Actor> menuActors;
+    private Array<Actor> highscoreActors;
+    public Array<Actor> playActors;
 
     private final float changingScreenDelay = 0.7f;
     private final float minAlphaOfAnimatedActors = 0.2f;
     private final float timeOfAlphaAction = 0.6f;
-    private final float fadingInAndOutTime = 0.5f;
+    public final float fadingInAndOutTime = 0.5f;
 
 
     public MainHuds(Batch batch, Viewport viewport){
@@ -181,16 +185,23 @@ public class MainHuds {
             }
         });
 
-        for (Actor a:highscoreActors) {
-            a.addAction(Actions.removeActor(a));
+        //ilk açılış
+        for (Actor a:menuActors) {
+            stage.addActor(a);
+            for (Action action:a.getActions()) {
+                a.removeAction(action);
+            }
+
+            a.addAction(Actions.fadeOut(0));
+            SequenceAction sequenceAction = new SequenceAction();
+            sequenceAction.addAction(Actions.delay(changingScreenDelay));
+            sequenceAction.addAction(Actions.fadeIn(fadingInAndOutTime));
+            if (a == btnPlay)
+                sequenceAction.addAction(Actions.forever(Actions.sequence(Actions.alpha(minAlphaOfAnimatedActors,timeOfAlphaAction),
+                        Actions.alpha(1f,timeOfAlphaAction))));
+            a.addAction(sequenceAction);
+
         }
-
-        for (Actor a:playActors) {
-            a.addAction(Actions.removeActor(a));
-        }
-
-
-
     }
 
 
@@ -201,7 +212,6 @@ public class MainHuds {
 
         playArrow = new Label("[GREEN]>[]",labelStyle);
         playArrow.setPosition(btnPlay.getX() - 20 - playArrow.getWidth(),btnPlay.getY());
-        stage.addActor(playArrow);
 
         originalArrow = new Label("[GREEN]>[]",labelStyle);
         originalArrow.setPosition(btnOriginal.getX() - 20 - originalArrow.getWidth(),btnOriginal.getY());
@@ -231,12 +241,6 @@ public class MainHuds {
         btnHighscores.setPosition(GameInfo.WIDTH / 2,GameInfo.HEIGHT / 2,Align.center);
         btnPlay.setPosition(GameInfo.WIDTH / 2,GameInfo.HEIGHT / 2 + 150,Align.center);
         btnMoreGame.setPosition(GameInfo.WIDTH / 2,GameInfo.HEIGHT / 2 - 150,Align.center);
-
-        stage.addActor(btnHighscores);
-        stage.addActor(btnMoreGame);
-        stage.addActor(btnPlay);
-
-
 
         ///////////////////////////
 

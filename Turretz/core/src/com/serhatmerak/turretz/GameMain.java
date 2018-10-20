@@ -2,14 +2,15 @@ package com.serhatmerak.turretz;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.serhatmerak.turretz.helpers.GifBatch;
 import com.serhatmerak.turretz.screens.MainScreen;
 
 public class GameMain extends Game {
-	public SpriteBatch batch;
+	public GifBatch batch;
 	
 	@Override
 	public void create () {
-		batch = new SpriteBatch();
+		batch = new GifBatch();
 		setScreen(new MainScreen(this));
 	}
 
